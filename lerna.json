@@ -1,0 +1,17 @@
+{
+  "version": "independent",
+  "npmClient": "pnpm",
+  "useWorkspaces": true,
+  "command": {
+    "version": {
+      "conventionalCommits": true,
+      "yes": true,
+      "noPrivate": true,
+      "push": false,
+      "gitTagVersion": false
+    },
+    "publish": {
+      "registry": "https://registry.npmjs.org/"
+    }
+  }
+}

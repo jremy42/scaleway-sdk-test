@@ -1,0 +1,74 @@
+name: Bump versions (PR)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  bump-pr:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: '0'
+
+      - uses: pnpm/action-setup@v4.1.0
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 20
+          check-latest: true
+
+      - run: pnpm install -g lerna@7 pnpm@9
+      - run: pnpm install
+      - run: pnpm -r run build
+
+      - name: Create release branch
+        run: |
+          BRANCH="ci/release-bump-${GITHUB_RUN_NUMBER}"
+          git switch -c "$BRANCH"
+          echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
+
+      - name: Version packages with lerna (no push, no tags)
+        run: |
+          pnpm lerna version -y --no-private \
+            --no-push --no-git-tag-version \
+            --conventional-commits
+        env:
+          HUSKY: 0
+
+      - name: Create signed commit via GitHub API
+        run: |
+          git add .
+          COMMIT_SHA=$(gh api repos/:owner/:repo/git/commits \
+            --field message="chore(release): version bump" \
+            --field tree="$(git write-tree)" \
+            --field parents="$(git rev-parse HEAD)" \
+            --jq '.sha')
+          gh api repos/:owner/:repo/git/refs/heads/${{ env.BRANCH_NAME }} \
+            --field sha="$COMMIT_SHA"
+          echo "Signed commit: $COMMIT_SHA"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create PR
+        run: |
+          PR_NUMBER=$(gh api repos/:owner/:repo/pulls \
+            --field title="chore(release): version bump" \
+            --field body="Automated version bump via CI - commits signed by GitHub bot" \
+            --field head="${{ env.BRANCH_NAME }}" \
+            --field base="main" \
+            --jq '.number')
+          echo "PR #$PR_NUMBER created"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge
+        run: |
+          PR_NUMBER=$(gh pr list --head "${{ env.BRANCH_NAME }}" --json number --jq '.[0].number')
+          gh pr merge "$PR_NUMBER" --auto --squash --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

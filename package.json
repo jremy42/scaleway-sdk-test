@@ -1,0 +1,11 @@
+{
+  "name": "dummy-release-test-do-not-publish",
+  "version": "0.0.0",
+  "private": false,
+  "description": "Test repo for CI signed commits and dry-run publish",
+  "license": "MIT",
+  "scripts": {
+    "build": "echo build ok",
+    "test": "echo tests ok"
+  }
+}
