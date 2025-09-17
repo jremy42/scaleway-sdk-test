@@ -1,7 +1,7 @@
 {
   "version": "independent",
   "npmClient": "pnpm",
-  "useWorkspaces": true,
+  "packages": ["packages/*"],
   "command": {
     "version": {
       "conventionalCommits": true,
