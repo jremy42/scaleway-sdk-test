@@ -45,10 +45,11 @@ jobs:
       - name: Create signed commit via GitHub API
         run: |
           git add .
+          PARENT_SHA=$(git rev-parse HEAD)
           COMMIT_SHA=$(gh api repos/:owner/:repo/git/commits \
             --field message="chore(release): version bump" \
             --field tree="$(git write-tree)" \
-            --field parents="$(git rev-parse HEAD)" \
+            --field parents="[\"$PARENT_SHA\"]" \
             --jq '.sha')
           gh api repos/:owner/:repo/git/refs/heads/${{ env.BRANCH_NAME }} \
             --field sha="$COMMIT_SHA"
