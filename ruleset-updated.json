@@ -1,0 +1,61 @@
+{
+  "id": 8161551,
+  "name": "main",
+  "target": "branch",
+  "source_type": "Repository",
+  "source": "jremy42/scaleway-sdk-test",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "refs/heads/main",
+        "refs/heads/release/*",
+        "refs/heads/hotfix/*"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": false,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": false,
+        "automatic_copilot_code_review_enabled": false,
+        "allowed_merge_methods": [
+          "merge",
+          "squash",
+          "rebase"
+        ]
+      }
+    },
+    {
+      "type": "required_linear_history"
+    },
+    {
+      "type": "required_signatures"
+    }
+  ],
+  "node_id": "RRS_lACqUmVwb3NpdG9yec4_DTrGzgB8iQ8",
+  "created_at": "2025-09-16T14:15:41.978+02:00",
+  "updated_at": "2025-09-16T14:35:08.689+02:00",
+  "bypass_actors": [],
+  "current_user_can_bypass": "never",
+  "_links": {
+    "self": {
+      "href": "https://api.github.com/repos/jremy42/scaleway-sdk-test/rulesets/8161551"
+    },
+    "html": {
+      "href": "https://github.com/jremy42/scaleway-sdk-test/rules/8161551"
+    }
+  }
+}
